@@ -1,0 +1,45 @@
+version: '3.4'
+  networks:
+  default:
+
+services:
+  php_tools_worker: &php_tools_worker
+    build:
+      context: ./docker
+      target: app
+      dockerfile: docker/Dockerfile_php_tools_worker
+    container_name: rechat_php_workers
+    networks:
+      - default
+    volumes:
+      - &data-app ../:/app
+    environment:
+      PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
+      REMOTE_HOST: host.docker.internal
+    depends_on:
+      - mongo
+
+  php_rechat_worker: &php_rechat_worker
+    build:
+      context: ./docker
+      target: app
+      dockerfile: docker/Dockerfile_php_tools_worker
+    container_name: rechat_php_workers
+    networks:
+      - default
+    volumes:
+      - &data-app ../:/app
+    environment:
+      PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
+      REMOTE_HOST: host.docker.internal
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    networks:
+      - default
+    restart: always
+    container_name: rechat_mongo
+    ports:
+      - 27017:27017

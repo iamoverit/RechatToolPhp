@@ -1,0 +1,26 @@
+FROM php:7.4.1-fpm-alpine as base
+
+RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+    echo /etc/apk/respositories && \
+    apk update && \
+    apk add --no-cache bash wget
+
+RUN set -ex && apk add --no-cache postgresql-dev libpng-dev libzip-dev icu-dev libxml2-dev $PHPIZE_DEPS \
+    && docker-php-ext-install pdo pdo_pgsql bcmath mbstring gd sockets \
+    zip iconv intl xml json dom zip opcache \
+    && pecl install xdebug && docker-php-ext-enable xdebug \
+    && rm -rf /var/cache/apk/* \
+    && echo $'xdebug.remote_enable=1 \n\
+               xdebug.remote_autostart=1 \n\
+               xdebug.xdebug.remote_port=9000 \n\
+               xdebug.remote_host=${REMOTE_HOST} \n\
+               xdebug.remote_connect_back=0 \n\
+               xdebug.remote_handler=dbgp' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+FROM base AS app
+WORKDIR /app
+
+CMD php src/console rechat:worker
