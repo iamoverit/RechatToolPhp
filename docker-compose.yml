@@ -13,7 +13,7 @@ services:
     networks:
       - default
     volumes:
-      - &data-app ../:/app
+      - &php-tools-worker-app ../:/app
     environment:
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
       REMOTE_HOST: host.docker.internal
@@ -29,7 +29,7 @@ services:
     networks:
       - default
     volumes:
-      - &data-app ../:/app
+      - &php-rechat-worker-app ../:/app
     environment:
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
       REMOTE_HOST: host.docker.internal
