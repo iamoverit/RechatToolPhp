@@ -8,7 +8,7 @@ services:
     build:
       context: ./docker
       target: app
-      dockerfile: docker/Dockerfile_php_tools_worker
+      dockerfile: Dockerfile_php_tools_worker
     container_name: rechat_php_workers
     networks:
       - default
@@ -24,7 +24,7 @@ services:
     build:
       context: ./docker
       target: app
-      dockerfile: docker/Dockerfile_php_tools_worker
+      dockerfile: Dockerfile_php_tools_worker
     container_name: rechat_php_workers
     networks:
       - default
