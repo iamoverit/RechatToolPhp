@@ -1,0 +1,6 @@
+/vendor/
+/.idea/
+/src/RechatToolDiscordBot/node_modules/
+/src/RechatToolDiscordBot/auth.json
+/tmp/
+/.env

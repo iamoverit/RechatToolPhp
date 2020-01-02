@@ -1,0 +1,17 @@
+{
+  "name": "RechatToolBot",
+  "version": "0.0.1beta",
+  "description": "Twitch Rechat Tool Discord Bot",
+  "main": "src/bot.js",
+  "author": "iam0verit",
+  "dependencies": {
+    "async": "^3.1.0",
+    "beanstalkd": "^2.2.2",
+    "discord.js": "git+https://git@github.com/discordjs/discord.js.git",
+    "fs": "0.0.1-security",
+    "jackd": "^1.2.4",
+    "nodestalker": "^0.1.21",
+    "utf8": "^3.0.0",
+    "winston": "^3.2.1"
+  }
+}
