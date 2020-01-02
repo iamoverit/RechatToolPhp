@@ -9,7 +9,7 @@ services:
       context: ./docker
       target: app
       dockerfile: Dockerfile_php_tools_worker
-    container_name: rechat_php_workers
+    container_name: php_tools_worker
     networks:
       - default
     volumes:
@@ -25,7 +25,7 @@ services:
       context: ./docker
       target: app
       dockerfile: Dockerfile_php_tools_worker
-    container_name: rechat_php_workers
+    container_name: php_rechat_worker
     networks:
       - default
     volumes:

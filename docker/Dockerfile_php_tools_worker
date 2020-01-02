@@ -5,7 +5,7 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     apk update && \
     apk add --no-cache bash wget
 
-RUN set -ex && apk add --no-cache postgresql-dev libpng-dev libzip-dev icu-dev libxml2-dev $PHPIZE_DEPS \
+RUN set -ex && apk add --no-cache postgresql-dev libpng-dev libzip-dev oniguruma-dev icu-dev libxml2-dev $PHPIZE_DEPS \
     && docker-php-ext-install pdo pdo_pgsql bcmath mbstring gd sockets \
     zip iconv intl xml json dom zip opcache \
     && pecl install xdebug && docker-php-ext-enable xdebug \
