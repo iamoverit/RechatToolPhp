@@ -35,4 +35,4 @@ COPY ./ /app
 
 RUN composer dumpautoload
 
-CMD php src/console tools:worker
+CMD php src/console.php tools:worker
