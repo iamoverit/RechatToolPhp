@@ -24,8 +24,9 @@ services:
     networks:
       - default
     volumes:
-      - &php-app-data ../:/app
+      - &php-app-data ./:/app
     environment:
+      WORKER_NAME: tools
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
       REMOTE_HOST: host.docker.internal
     depends_on:
@@ -35,9 +36,10 @@ services:
     <<: *php_tools_worker
     restart: always
     container_name: rechat_php_rechat_worker
-    command: "php src/console.php rechat:worker"
     volumes:
       - *php-app-data
+    environment:
+      WORKER_NAME: rechat
     depends_on:
       - mongo
 
