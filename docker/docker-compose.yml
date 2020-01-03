@@ -4,8 +4,14 @@ networks:
   default:
 
 volumes:
+  app_volume:
   rechat-external-mongodb-data:
     external: true
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/d/MongoDB_WSL/
 
 services:
   beanstalkd:
@@ -16,15 +22,15 @@ services:
 
   php_tools_worker: &php_tools_worker
     build:
-      context: ./
+      context: ../
       target: app
-      dockerfile: docker/Dockerfile_php_tools_worker
+      dockerfile: ./docker/debug/Dockerfile_php_tools_worker
     restart: always
     container_name: rechat_php_tools_worker
     networks:
       - default
     volumes:
-      - &php-app-data ./:/app
+      - &php-app-data app_volume:/app
     environment:
       WORKER_NAME: tools
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
@@ -32,7 +38,7 @@ services:
     depends_on:
       - mongo
 
-  php_rechat_worker: &php_rechat_worker
+  php_rechat_worker:
     <<: *php_tools_worker
     restart: always
     container_name: rechat_php_rechat_worker
