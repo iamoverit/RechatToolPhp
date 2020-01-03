@@ -1,19 +1,29 @@
-version: '3.4'
+version: '3.7'
 
 networks:
   default:
 
+volumes:
+  rechat-external-mongodb-data:
+    external: true
+
 services:
+  beanstalkd:
+    image: bodsch/docker-beanstalkd
+    container_name: rechat_beanstalkd
+    networks:
+      - default
+
   php_tools_worker: &php_tools_worker
     build:
-      context: ./docker
+      context: ./
       target: app
-      dockerfile: Dockerfile_php_tools_worker
-    container_name: php_tools_worker
+      dockerfile: docker/Dockerfile_php_tools_worker
+    container_name: rechat_php_tools_worker
     networks:
       - default
     volumes:
-      - &php-tools-worker-app ../:/app
+      - &php-app-data ../:/app
     environment:
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
       REMOTE_HOST: host.docker.internal
@@ -22,14 +32,14 @@ services:
 
   php_rechat_worker: &php_rechat_worker
     build:
-      context: ./docker
+      context: ./
       target: app
-      dockerfile: Dockerfile_php_tools_worker
-    container_name: php_rechat_worker
+      dockerfile: docker/Dockerfile_php_tools_worker
+    container_name: rechat_php_rechat_worker
     networks:
       - default
     volumes:
-      - &php-rechat-worker-app ../:/app
+      - *php-app-data
     environment:
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
       REMOTE_HOST: host.docker.internal
@@ -41,6 +51,8 @@ services:
     networks:
       - default
     restart: always
-    container_name: rechat_mongo
+    container_name: rechat_mongodb
+    volumes:
+      - rechat-external-mongodb-data:/mnt/d/MongoDB_WSL/data
     ports:
       - 27017:27017
