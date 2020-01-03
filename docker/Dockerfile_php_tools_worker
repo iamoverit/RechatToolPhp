@@ -9,6 +9,7 @@ RUN set -ex && apk add --no-cache postgresql-dev libpng-dev libzip-dev oniguruma
     && docker-php-ext-install pdo pdo_pgsql bcmath mbstring gd sockets \
     zip iconv intl xml json dom zip opcache \
     && pecl install xdebug && docker-php-ext-enable xdebug \
+    && pecl install mongodb && docker-php-ext-enable mongodb \
     && rm -rf /var/cache/apk/* \
     && echo $'xdebug.remote_enable=1 \n\
                xdebug.remote_autostart=1 \n\
