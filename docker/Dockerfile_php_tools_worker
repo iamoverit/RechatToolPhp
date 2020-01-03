@@ -36,5 +36,5 @@ COPY ./ /app
 
 RUN composer dumpautoload
 
-#CMD php app/src/console.php $WORKER_NAME:worker
+#CMD php app/src/console.php ${WORKER_NAME}:worker
 CMD php-fpm
