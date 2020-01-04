@@ -35,6 +35,8 @@ services:
       WORKER_NAME: tools
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
       REMOTE_HOST: host.docker.internal
+    env_file:
+      ../.env
     depends_on:
       - mongo
 
