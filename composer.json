@@ -3,6 +3,8 @@
         "psr-4": {"Rechat\\": "src/"}
     },
     "require": {
+        "php": ">=7.4.1",
+        "ext-mongodb": "*",
         "guzzlehttp/guzzle": "^6.5",
         "mongodb/mongodb": "^1.5",
         "nicklaw5/twitch-api-php": "dev-master",
@@ -10,7 +12,6 @@
         "pda/pheanstalk": "^4.0",
         "adhocore/cli": "^0.6.1",
         "symfony/console": "^5.0",
-        "ext-mongodb": "*",
         "vlucas/phpdotenv": "^4.1"
     }
 }

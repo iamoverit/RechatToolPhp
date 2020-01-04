@@ -19,6 +19,8 @@ services:
     container_name: rechat_beanstalkd
     networks:
       - default
+    ports:
+      - 11300:11300
 
   php_tools_worker: &php_tools_worker
     build:
