@@ -10,8 +10,6 @@ $dotenv->load();
 $console = new Application();
 $console->setAutoExit(false);
 
-$console->add(new \Rechat\BeanstalkdClearCli());
-
 $console->add(new \Rechat\RechatWorkerCli());
 $console->add(new \Rechat\ToolsWorkerCli());
 

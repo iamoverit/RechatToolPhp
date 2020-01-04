@@ -30,7 +30,7 @@ services:
     networks:
       - default
     volumes:
-      - &php-app-data app_volume:/app
+      - &php-app-data ../:/app
     environment:
       WORKER_NAME: tools
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers

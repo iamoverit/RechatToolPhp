@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "adhocore/cli",
-            "version": "0.6.1",
+            "version": "0.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adhocore/php-cli.git",
-                "reference": "c00ba41e0ada982c384af0d273ea746771b292d0"
+                "reference": "13254de9a00a9ac7fafb9dcf5450eca144125e94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adhocore/php-cli/zipball/c00ba41e0ada982c384af0d273ea746771b292d0",
-                "reference": "c00ba41e0ada982c384af0d273ea746771b292d0",
+                "url": "https://api.github.com/repos/adhocore/php-cli/zipball/13254de9a00a9ac7fafb9dcf5450eca144125e94",
+                "reference": "13254de9a00a9ac7fafb9dcf5450eca144125e94",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 "stream-input",
                 "stream-output"
             ],
-            "time": "2019-12-29T15:09:03+00:00"
+            "time": "2019-12-30T13:29:49+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
