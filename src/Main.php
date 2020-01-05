@@ -49,9 +49,9 @@ class Main
 
     public static function searchUserInChannel(
         string $channelName = 'tayga_play',
-        ?string $searchUserName = null,
-        ?int $last = null
-    ) {
+        ?int $last = null,
+        ?string ...$searchUserNames
+    ): string {
         $mongoClient = new \MongoDB\Client('mongodb://mongo/test?retryWrites=true&w=majority');
         // TODO: extract this parameters to .env
         $clientId = getenv('TWITCH_APP_CLIENT_ID');
@@ -88,10 +88,15 @@ class Main
                     ['$set' => ['isCompleted' => $isCompleted,],],
                     ['upsert' => true]
                 );
-                $searchCondition = [];
-                if ($searchUserName !== null) {
-                    $searchCondition = ['commenter.name' => strtolower($searchUserName)];
+                $searchConditions = [];
+                foreach ($searchUserNames as $searchUserName) {
+                    $searchConditions[] = ['commenter.name' => strtolower($searchUserName)];
                 }
+                $searchCondition = [];
+                if (count($searchConditions) > 0) {
+                    $searchCondition = ['$or' => $searchConditions];
+                }
+
                 foreach ($mongoClient->test->selectCollection($vod->id)
                              ->find($searchCondition) as $chatRow) {
                     fputs(

@@ -28,7 +28,7 @@ class RechatCli extends Command
             ->addArgument('channel', InputArgument::REQUIRED, 'Twitch channel name e.g. honechk1')
             ->addArgument(
                 'user',
-                InputArgument::OPTIONAL,
+                InputArgument::IS_ARRAY,
                 'Twitch user name to search there messages in twitch channel e.g. tallbl4'
             )
             ->addOption(
@@ -45,8 +45,8 @@ class RechatCli extends Command
         $output->writeln(
             Main::searchUserInChannel(
                 $input->getArgument('channel'),
-                $input->getArgument('user'),
-                $input->getOption('last')
+                $input->getOption('last'),
+                ...$input->getArgument('user')
             )
         );
 
