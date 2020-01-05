@@ -4,7 +4,7 @@ networks:
   default:
 
 volumes:
-  app_volume:
+  tmp_volume:
   rechat-external-mongodb-data:
     external: true
     driver: local
@@ -32,7 +32,8 @@ services:
     networks:
       - default
     volumes:
-      - &php-app-data ../:/app
+      - &app-data ../:/app
+      - &tmp tmp_volume:/tmp
     environment:
       WORKER_NAME: tools
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
@@ -45,7 +46,8 @@ services:
     restart: always
     container_name: rechat_php_rechat_worker
     volumes:
-      - *php-app-data
+      - *app-data
+      - *tmp
     environment:
       WORKER_NAME: rechat
     depends_on:
@@ -61,7 +63,8 @@ services:
     networks:
       - default
     volumes:
-      - &node-app-data ../src/RechatToolDiscordBot:/app
+      - *app-data
+      - *tmp
     environment:
       WORKER_NAME: worker
     depends_on:
@@ -72,7 +75,8 @@ services:
     restart: always
     container_name: node_discord_bot
     volumes:
-      - *node-app-data
+      - *app-data
+      - *tmp
     environment:
       WORKER_NAME: bot
     depends_on:

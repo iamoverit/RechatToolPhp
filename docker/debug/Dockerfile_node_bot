@@ -6,7 +6,7 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     apk update && \
     apk add --no-cache bash wget
 
-WORKDIR /app
+WORKDIR /app/src/RechatToolDiscordBot
 #COPY package.json package-lock.json ./
 
 # If you have native dependencies, you'll need extra tools
