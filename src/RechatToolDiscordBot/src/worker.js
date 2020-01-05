@@ -27,7 +27,7 @@ function processJob(job, callback) {
 }
 
 function resJob() {
-    const client = bs.Client('127.0.0.1:11300');
+    const client = bs.Client('beanstalkd');
 
     client.watch(tube).onSuccess(function (data) {
         client.reserve().onSuccess(function (job) {

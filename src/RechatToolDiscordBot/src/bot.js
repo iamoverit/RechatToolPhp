@@ -13,7 +13,7 @@ Logger.level = 'debug';
 
 const Jackd = require('jackd');
 const beanstalkd = new Jackd();
-beanstalkd.connect({'host': 'localhost', 'port': 11300});
+beanstalkd.connect({'host': 'beanstalkd', 'port': 11300});
 // const beanstalkdClient = new Beanstalkd.constructor('localhost', 11300);
 // Configure logger settings
 

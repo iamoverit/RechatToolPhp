@@ -36,9 +36,7 @@ services:
     environment:
       WORKER_NAME: tools
       PHP_IDE_CONFIG: serverName=docker-rechat-php-workers
-      REMOTE_HOST: host.docker.internal
-    env_file:
-      ../.env
+      REMOTE_HOST: 172.29.128.1
     depends_on:
       - mongo
 
@@ -50,6 +48,33 @@ services:
       - *php-app-data
     environment:
       WORKER_NAME: rechat
+    depends_on:
+      - mongo
+
+  node_discord_worker: &node_discord_worker
+    build:
+      context: ../
+      target: app
+      dockerfile: ./docker/debug/Dockerfile_node_bot
+    restart: always
+    container_name: node_discord_worker
+    networks:
+      - default
+    volumes:
+      - &node-app-data ../src/RechatToolDiscordBot:/app
+    environment:
+      WORKER_NAME: worker
+    depends_on:
+      - mongo
+
+  node_discord_bot:
+    <<: *node_discord_worker
+    restart: always
+    container_name: node_discord_bot
+    volumes:
+      - *node-app-data
+    environment:
+      WORKER_NAME: bot
     depends_on:
       - mongo
 

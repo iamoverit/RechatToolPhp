@@ -16,7 +16,7 @@ class Main
     public static function run($vodId)
     {
         $mongoClient = new \MongoDB\Client(
-            'mongodb://localhost/test?retryWrites=true&w=majority'
+            'mongodb://mongo/test?retryWrites=true&w=majority'
         );
 
         $videoCursor = $mongoClient->test
@@ -52,7 +52,7 @@ class Main
         ?string $searchUserName = null,
         ?int $last = null
     ) {
-        $mongoClient = new \MongoDB\Client('mongodb://127.0.0.1/test?retryWrites=true&w=majority');
+        $mongoClient = new \MongoDB\Client('mongodb://mongo/test?retryWrites=true&w=majority');
         // TODO: extract this parameters to .env
         $clientId = getenv('TWITCH_APP_CLIENT_ID');
         $clientSecret = getenv('TWITCH_APP_CLIENT_SECRET');

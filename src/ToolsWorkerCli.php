@@ -83,9 +83,10 @@ class ToolsWorkerCli extends Command
     }
 
     /**
+     * @param string $command
      * @return string
      */
-    protected function getResponseType(string $command): array
+    protected function getResponseType(string $command): ?string
     {
         $inputDefinition = new InputDefinition([new InputOption('--highlight', '-hl', InputOption::VALUE_OPTIONAL, 'Response highlight type', null)]);
         $stringInput = new \Rechat\lib\StringInput($command);

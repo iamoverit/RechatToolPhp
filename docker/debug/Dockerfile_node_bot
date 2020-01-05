@@ -1,13 +1,20 @@
 # This stage installs our modules
-FROM mhart/alpine-node:latest
-WORKDIR /app/src/RechatToolDiscordBot/
-COPY package.json package-lock.json ./
+FROM mhart/alpine-node:latest as base
+
+RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+    echo /etc/apk/respositories && \
+    apk update && \
+    apk add --no-cache bash wget
+
+WORKDIR /app
+#COPY package.json package-lock.json ./
 
 # If you have native dependencies, you'll need extra tools
 # RUN apk add --no-cache make gcc g++ python
+FROM base AS app
+#RUN npm ci --prod
 
-RUN npm ci --prod
-
-COPY --from=0 /app .
-COPY . .
-CMD ["node", "src/bot.js"]
+#COPY --from=0 /app .
+#COPY . .
+CMD node src/${WORKER_NAME}.js
+#CMD ["ping", "8.8.8.8"]
