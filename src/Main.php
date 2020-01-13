@@ -89,23 +89,26 @@ class Main
                     ['upsert' => true]
                 );
                 $searchConditions = [];
+                //$commenterNameLength = 0;
                 foreach ($searchUserNames as $searchUserName) {
+                    //$commenterNameLength = max(strlen($searchUserName), $commenterNameLength);
                     $searchConditions[] = ['commenter.name' => strtolower($searchUserName)];
                 }
                 $searchCondition = [];
+
                 if (count($searchConditions) > 0) {
                     $searchCondition = ['$or' => $searchConditions];
                 }
 
-                foreach ($mongoClient->test->selectCollection($vod->id)
-                             ->find($searchCondition) as $chatRow) {
+                $chatRows = $mongoClient->test->selectCollection($vod->id)->find($searchCondition);
+                $commenterNameLength = max(...[array_map('strlen', $searchUserNames)]);
+                foreach ($chatRows as $chatRow) {
                     fputs(
                         $handle,
-                        $vod->id.': '.str_pad(
-                            $chatRow->commenter->name,
-                            20,
-                            ' '
-                        ).': '.$chatRow->message->body.PHP_EOL
+                        $vod->id.': '.
+                        Carbon::createFromTimeString($chatRow->created_at)->isoFormat('DD/MM/YY HH:mm').': '
+                        .str_pad($chatRow->commenter->name, $commenterNameLength, ' ').': '
+                        .$chatRow->message->body.PHP_EOL
                     );
                 }
             }
