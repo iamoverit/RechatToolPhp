@@ -105,17 +105,20 @@ class Main
                     ];
                 }
 
-                $userSearchCondition = null;
+                $searchCondition = [];
                 if (count($userSearchConditions) > 0) {
                     $userSearchCondition = ['$or' => $userSearchConditions];
+                    $searchCondition = $userSearchCondition;
                 }
 
-                $messageSearchCondition = null;
                 if (count($messageSearchConditions) > 0) {
                     $messageSearchCondition = ['$or' => $messageSearchConditions];
+                    $searchCondition = $messageSearchCondition;
                 }
 
-                $searchCondition = ['$and' => [$userSearchCondition, $messageSearchCondition]];
+                if (isset($userSearchCondition) && isset($messageSearchCondition)) {
+                    $searchCondition = ['$and' => [$userSearchCondition, $messageSearchCondition]];
+                }
 
                 $chatRows = $mongoClient->test->selectCollection($vod->id)->find($searchCondition);
                 $commenterNameLength = max(...[array_map('strlen', $searchUserNames)]);
