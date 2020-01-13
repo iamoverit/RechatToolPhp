@@ -50,7 +50,8 @@ class Main
     public static function searchUserInChannel(
         string $channelName = 'tayga_play',
         ?int $last = null,
-        ?string ...$searchUserNames
+        ?array $searchUserNames = [],
+        ?array $searchMessages = []
     ): string {
         $mongoClient = new \MongoDB\Client('mongodb://mongo/test?retryWrites=true&w=majority');
         // TODO: extract this parameters to .env
@@ -88,17 +89,33 @@ class Main
                     ['$set' => ['isCompleted' => $isCompleted,],],
                     ['upsert' => true]
                 );
-                $searchConditions = [];
-                //$commenterNameLength = 0;
-                foreach ($searchUserNames as $searchUserName) {
-                    //$commenterNameLength = max(strlen($searchUserName), $commenterNameLength);
-                    $searchConditions[] = ['commenter.name' => strtolower($searchUserName)];
-                }
-                $searchCondition = [];
 
-                if (count($searchConditions) > 0) {
-                    $searchCondition = ['$or' => $searchConditions];
+                $userSearchConditions = [];
+                foreach ($searchUserNames as $searchUserName) {
+                    $userSearchConditions[] = ['commenter.name' => strtolower($searchUserName)];
                 }
+
+                $messageSearchConditions = [];
+                foreach ($searchMessages as $searchMessage) {
+                    $messageSearchConditions[] = [
+                        'message.body' => [
+                            '$regex' => strtolower($searchMessage),
+                            '$options' => 'is',
+                        ],
+                    ];
+                }
+
+                $userSearchCondition = null;
+                if (count($userSearchConditions) > 0) {
+                    $userSearchCondition = ['$or' => $userSearchConditions];
+                }
+
+                $messageSearchCondition = null;
+                if (count($messageSearchConditions) > 0) {
+                    $messageSearchCondition = ['$or' => $messageSearchConditions];
+                }
+
+                $searchCondition = ['$and' => [$userSearchCondition, $messageSearchCondition]];
 
                 $chatRows = $mongoClient->test->selectCollection($vod->id)->find($searchCondition);
                 $commenterNameLength = max(...[array_map('strlen', $searchUserNames)]);

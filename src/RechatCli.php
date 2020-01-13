@@ -5,6 +5,7 @@ namespace Rechat;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -27,9 +28,15 @@ class RechatCli extends Command
             )
             ->addArgument('channel', InputArgument::REQUIRED, 'Twitch channel name e.g. honechk1')
             ->addArgument(
-                'user',
+                'users',
                 InputArgument::IS_ARRAY,
                 'Twitch user name to search there messages in twitch channel e.g. tallbl4'
+            )
+            ->addOption(
+                'message',
+                'm',
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Part of message to filter results.'
             )
             ->addOption(
                 'last',
@@ -46,7 +53,8 @@ class RechatCli extends Command
             Main::searchUserInChannel(
                 $input->getArgument('channel'),
                 $input->getOption('last'),
-                ...$input->getArgument('user')
+                $input->getArgument('users'),
+                $input->getOption('message')
             )
         );
 
