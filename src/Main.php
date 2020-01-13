@@ -75,6 +75,11 @@ class Main
             if ($last !== null) {
                 $videosResponseData = array_slice($videosResponseData, 0, $last);
             }
+
+            $searchCondition = self::getSearchCondition($searchUserNames, $searchMessages);
+
+            $aggregatePipeline = self::getAggregatePipline($searchCondition);
+
             foreach ($videosResponseData as $vod) {
                 $videoCursors = $mongoClient->test->selectCollection('videoCursors');
                 if (!($videoCursors->findOne(['_id' => $vod->id])->isCompleted ?? false)) {
@@ -90,44 +95,20 @@ class Main
                     ['upsert' => true]
                 );
 
-                $userSearchConditions = [];
-                foreach ($searchUserNames as $searchUserName) {
-                    $userSearchConditions[] = ['commenter.name' => strtolower($searchUserName)];
-                }
-
-                $messageSearchConditions = [];
-                foreach ($searchMessages as $searchMessage) {
-                    $messageSearchConditions[] = [
-                        'message.body' => [
-                            '$regex' => strtolower($searchMessage),
-                            '$options' => 'is',
-                        ],
-                    ];
-                }
-
-                $searchCondition = [];
-                if (count($userSearchConditions) > 0) {
-                    $userSearchCondition = ['$or' => $userSearchConditions];
-                    $searchCondition = $userSearchCondition;
-                }
-
-                if (count($messageSearchConditions) > 0) {
-                    $messageSearchCondition = ['$or' => $messageSearchConditions];
-                    $searchCondition = $messageSearchCondition;
-                }
-
-                if (isset($userSearchCondition) && isset($messageSearchCondition)) {
-                    $searchCondition = ['$and' => [$userSearchCondition, $messageSearchCondition]];
+                $commenterNameLength = $mongoClient->test->selectCollection($vod->id)->aggregate($aggregatePipeline);
+                $commenterNameLengthMax = 0;
+                foreach ($commenterNameLength as $item) {
+                    $commenterNameLengthMax = max($commenterNameLengthMax, (int)$item->length);
                 }
 
                 $chatRows = $mongoClient->test->selectCollection($vod->id)->find($searchCondition);
-                $commenterNameLength = max(...[array_map('strlen', $searchUserNames)]);
                 foreach ($chatRows as $chatRow) {
                     fputs(
                         $handle,
-                        $vod->id.': '.
-                        Carbon::createFromTimeString($chatRow->created_at)->isoFormat('DD/MM/YY HH:mm').': '
-                        .str_pad($chatRow->commenter->name, $commenterNameLength, ' ').': '
+                        $vod->id.': '
+                        .Carbon::createFromTimeString(substr($chatRow->created_at, 0, 15))
+                            ->isoFormat('DD/MM/YY HH:mm').': '
+                        .str_pad($chatRow->commenter->name, $commenterNameLengthMax, ' ').': '
                         .$chatRow->message->body.PHP_EOL
                     );
                 }
@@ -135,7 +116,12 @@ class Main
             fclose($handle);
 
             return \GuzzleHttp\json_encode(
-                ['channelName' => $channelName, 'searchUserName' => $searchUserName, 'tmpfilename' => $tmpfname]
+                [
+                    'channelName' => $channelName,
+                    'searchUserName' => $searchUserNames,
+                    'searchMessages' => $searchMessages,
+                    'tmpfilename' => $tmpfname,
+                ]
             );
 
         } catch (GuzzleException $e) {
@@ -144,6 +130,66 @@ class Main
             fputs(STDERR, "{$e->getTraceAsString()}");
             throw $e;
         }
+    }
+
+    /**
+     * @param array|null $searchUserNames
+     * @param array|null $searchMessages
+     * @return array
+     */
+    protected static function getSearchCondition(?array $searchUserNames, ?array $searchMessages): array
+    {
+        $userSearchConditions = [];
+        foreach ($searchUserNames as $searchUserName) {
+            $userSearchConditions[] = ['commenter.name' => strtolower($searchUserName)];
+        }
+
+        $messageSearchConditions = [];
+        foreach ($searchMessages as $searchMessage) {
+            $messageSearchConditions[] = [
+                'message.body' => [
+                    '$regex' => '.*'.$searchMessage.'.*',
+                    '$options' => 'is',
+                ],
+            ];
+        }
+
+        $searchCondition = [];
+        if (count($userSearchConditions) > 0) {
+            $userSearchCondition = ['$or' => $userSearchConditions];
+            $searchCondition = $userSearchCondition;
+        }
+
+        if (count($messageSearchConditions) > 0) {
+            $messageSearchCondition = ['$or' => $messageSearchConditions];
+            $searchCondition = $messageSearchCondition;
+        }
+
+        if (isset($userSearchCondition) && isset($messageSearchCondition)) {
+            $searchCondition = ['$and' => [$userSearchCondition, $messageSearchCondition]];
+        }
+
+        return $searchCondition;
+    }
+
+    /**
+     * @param array $searchCondition
+     * @return array
+     */
+    protected static function getAggregatePipline(array $searchCondition): array
+    {
+        $aggregatePipeline = [];
+        if ($searchCondition != []) {
+            $aggregatePipeline [] = ['$match' => $searchCondition];
+        }
+        $aggregatePipeline [] = [
+            '$group' => [
+                '_id' => 'null',
+                'length' => ['$max' => ['$strLenCP' => '$commenter.name']],
+            ],
+        ];
+
+        return $aggregatePipeline;
     }
 }
 
