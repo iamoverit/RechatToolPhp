@@ -1,0 +1,3 @@
+docker-compose -f docker/docker-compose.yml -p rechat down
+docker-compose -f docker/docker-compose.yml -p rechat build
+docker-compose -f docker/docker-compose.yml -p rechat up -d
