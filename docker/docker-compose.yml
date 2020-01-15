@@ -19,6 +19,7 @@ services:
     container_name: rechat_beanstalkd
     networks:
       - default
+    restart: always
     ports:
       - 11300:11300
 
