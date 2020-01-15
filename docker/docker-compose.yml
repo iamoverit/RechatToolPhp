@@ -7,22 +7,8 @@ volumes:
   tmp_volume:
   rechat-external-mongodb-data:
     external: true
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /mnt/d/MongoDB_WSL/
 
 services:
-  beanstalkd:
-    image: bodsch/docker-beanstalkd
-    container_name: rechat_beanstalkd
-    networks:
-      - default
-    restart: always
-    ports:
-      - 11300:11300
-
   php_tools_worker: &php_tools_worker
     build:
       context: ../
@@ -41,6 +27,7 @@ services:
       REMOTE_HOST: 172.29.128.1
     depends_on:
       - mongo
+      - beanstalkd
 
   php_rechat_worker:
     <<: *php_tools_worker
@@ -53,6 +40,7 @@ services:
       WORKER_NAME: rechat
     depends_on:
       - mongo
+      - beanstalkd
 
   node_discord_worker: &node_discord_worker
     build:
@@ -70,6 +58,7 @@ services:
       WORKER_NAME: worker
     depends_on:
       - mongo
+      - beanstalkd
 
   node_discord_bot:
     <<: *node_discord_worker
@@ -82,6 +71,16 @@ services:
       WORKER_NAME: bot
     depends_on:
       - mongo
+      - beanstalkd
+
+  beanstalkd:
+    image: bodsch/docker-beanstalkd
+    container_name: rechat_beanstalkd
+    networks:
+      - default
+    restart: always
+    ports:
+      - 11300:11300
 
   mongo:
     image: mongo
@@ -90,6 +89,6 @@ services:
     restart: always
     container_name: rechat_mongodb
     volumes:
-      - rechat-external-mongodb-data:/mnt/d/MongoDB_WSL/data
+      - rechat-external-mongodb-data:/data/db
     ports:
       - 27017:27017
