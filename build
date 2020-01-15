@@ -1,1 +1,1 @@
-docker-compose -f docker/docker-compose.yml -p rechat build --no-cache
+docker-compose -f docker/docker-compose.yml -p rechat build

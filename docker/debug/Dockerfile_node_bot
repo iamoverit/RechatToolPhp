@@ -16,5 +16,5 @@ FROM base AS app
 
 #COPY --from=0 /app .
 #COPY . .
-CMD node src/${WORKER_NAME}.js
+CMD bash -c "npm install" && node src/${WORKER_NAME}.js
 #CMD ["ping", "8.8.8.8"]
